@@ -1,18 +1,18 @@
 class Vector {
-    //point class
+    //点/向量类
     constructor(public x: number,
                 public y: number,
                 public z: number) {
     }
-    //k multiple Vector
+    //倍乘
     static times(k: number, v: Vector) { return new Vector(k * v.x, k * v.y, k * v.z); }
-    //point co-ordinate D-value
+    //求差
     static minus(v1: Vector, v2: Vector) { return new Vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z); }
-    //point add Vector
+    //求和
     static plus(v1: Vector, v2: Vector) { return new Vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z); }
     //Vector multiplication
     static dot(v1: Vector, v2: Vector) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
-    //get length of Vector
+    //求长度
     static mag(v: Vector) { return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
     //
     static norm(v: Vector) {
@@ -20,7 +20,7 @@ class Vector {
         var div = (mag === 0) ? Infinity : 1.0 / mag;
         return Vector.times(div, v);
     }
-    //get normal Vector of the plane which v1 and v2 in
+    //取得v1，v2所在平面的法向量
     static cross(v1: Vector, v2: Vector) {
         return new Vector(v1.y * v2.z - v1.z * v2.y,
                           v1.z * v2.x - v1.x * v2.z,
@@ -29,21 +29,22 @@ class Vector {
 }
 
 class Color {
-    //Color class
+    //颜色类
     constructor(public r: number,
                 public g: number,
                 public b: number) {
     }
-    //
+    //倍乘
     static scale(k: number, v: Color) { return new Color(k * v.r, k * v.g, k * v.b); }
-    //add
+    //相加
     static plus(v1: Color, v2: Color) { return new Color(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b); }
-    //v1 * v2
+    //相乘
     static times(v1: Color, v2: Color) { return new Color(v1.r * v2.r, v1.g * v2.g, v1.b * v2.b); }
-    //set color
+    //设置默认颜色RGB
     static white = new Color(1.0, 1.0, 1.0);
     static grey = new Color(0.5, 0.5, 0.5);
     static black = new Color(0.0, 0.0, 0.0);
+    //
     static background = Color.black;
     static defaultColor = Color.black;
     static toDrawingColor(c: Color) {
@@ -57,6 +58,7 @@ class Color {
 }
 
 class Camera {
+    //class eyes
     public forward: Vector;
     public right: Vector;
     public up: Vector;
@@ -70,7 +72,10 @@ class Camera {
 }
 
 interface Ray {
+    //射线接口
+    //起点
     start: Vector;
+    //方向
     dir: Vector;
 }
 
