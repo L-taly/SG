@@ -1,32 +1,44 @@
 var Vector = (function () {
+    //点/向量类
     function Vector(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
+    //倍乘
     Vector.times = function (k, v) { return new Vector(k * v.x, k * v.y, k * v.z); };
+    //求差
     Vector.minus = function (v1, v2) { return new Vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z); };
+    //求和
     Vector.plus = function (v1, v2) { return new Vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z); };
+    //Vector multiplication
     Vector.dot = function (v1, v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; };
+    //求长度
     Vector.mag = function (v) { return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); };
+    //
     Vector.norm = function (v) {
         var mag = Vector.mag(v);
         var div = (mag === 0) ? Infinity : 1.0 / mag;
         return Vector.times(div, v);
     };
+    //取得v1，v2所在平面的法向量
     Vector.cross = function (v1, v2) {
         return new Vector(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
     };
     return Vector;
 }());
 var Color = (function () {
+    //颜色类
     function Color(r, g, b) {
         this.r = r;
         this.g = g;
         this.b = b;
     }
+    //倍乘
     Color.scale = function (k, v) { return new Color(k * v.r, k * v.g, k * v.b); };
+    //相加
     Color.plus = function (v1, v2) { return new Color(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b); };
+    //相乘
     Color.times = function (v1, v2) { return new Color(v1.r * v2.r, v1.g * v2.g, v1.b * v2.b); };
     Color.toDrawingColor = function (c) {
         var legalize = function (d) { return d > 1 ? 1 : d; };
@@ -38,9 +50,11 @@ var Color = (function () {
     };
     return Color;
 }());
+//设置默认颜色RGB
 Color.white = new Color(1.0, 1.0, 1.0);
 Color.grey = new Color(0.5, 0.5, 0.5);
 Color.black = new Color(0.0, 0.0, 0.0);
+//
 Color.background = Color.black;
 Color.defaultColor = Color.black;
 var Camera = (function () {
@@ -54,6 +68,7 @@ var Camera = (function () {
     return Camera;
 }());
 var Sphere = (function () {
+    //构造函数球心坐标，半径，表面
     function Sphere(center, radius, surface) {
         this.center = center;
         this.surface = surface;
@@ -214,18 +229,19 @@ function defaultScene() {
     return {
         things: [new Plane(new Vector(0.0, 1.0, 0.0), 0.0, Surfaces.checkerboard),
             new Sphere(new Vector(0.0, 1.0, -0.25), 1.0, Surfaces.shiny),
-            new Sphere(new Vector(-1.0, 0.5, 1.5), 0.5, Surfaces.shiny)],
+            new Sphere(new Vector(-1.0, 0.5, 1.5), 0.5, Surfaces.shiny),
+            new Sphere(new Vector(0.0, 2.0, 1.5), 0.5, Surfaces.shiny)],
         lights: [{ pos: new Vector(-2.0, 2.5, 0.0), color: new Color(0.49, 0.07, 0.07) },
             { pos: new Vector(1.5, 2.5, 1.5), color: new Color(0.07, 0.07, 0.49) },
             { pos: new Vector(1.5, 2.5, -1.5), color: new Color(0.07, 0.49, 0.071) },
             { pos: new Vector(0.0, 3.5, 0.0), color: new Color(0.21, 0.21, 0.35) }],
-        camera: new Camera(new Vector(3.0, 2.0, 4.0), new Vector(-1.0, 0.5, 0.0))
+        camera: new Camera(new Vector(6.0, 4.0, 8.0), new Vector(-1.0, 0.5, 0.0))
     };
 }
 function exec() {
     var canv = document.createElement("canvas");
-    canv.width = 256;
-    canv.height = 256;
+    canv.width = 600;
+    canv.height = 600;
     document.body.appendChild(canv);
     var ctx = canv.getContext("2d");
     var rayTracer = new RayTracer();

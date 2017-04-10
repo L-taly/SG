@@ -110,8 +110,10 @@ interface Scene {
 }
 
 class Sphere implements Thing {
+    //球实现Thing接口
     public radius2: number;
 
+    //构造函数球心坐标，半径，表面
     constructor(public center: Vector, radius: number, public surface: Surface) {
         this.radius2 = radius * radius;
     }
@@ -272,19 +274,20 @@ function defaultScene(): Scene {
     return {
         things: [new Plane(new Vector(0.0, 1.0, 0.0), 0.0, Surfaces.checkerboard),
                  new Sphere(new Vector(0.0, 1.0, -0.25), 1.0, Surfaces.shiny),
-                 new Sphere(new Vector(-1.0, 0.5, 1.5), 0.5, Surfaces.shiny)],
+                 new Sphere(new Vector(-1.0, 0.5, 1.5), 0.5, Surfaces.shiny),
+                 new Sphere(new Vector(0.0,2.0,1.5),0.5,Surfaces.shiny)],
         lights: [{ pos: new Vector(-2.0, 2.5, 0.0), color: new Color(0.49, 0.07, 0.07) },
                  { pos: new Vector(1.5, 2.5, 1.5), color: new Color(0.07, 0.07, 0.49) },
                  { pos: new Vector(1.5, 2.5, -1.5), color: new Color(0.07, 0.49, 0.071) },
                  { pos: new Vector(0.0, 3.5, 0.0), color: new Color(0.21, 0.21, 0.35) }],
-        camera: new Camera(new Vector(3.0, 2.0, 4.0), new Vector(-1.0, 0.5, 0.0))
+        camera: new Camera(new Vector(6.0, 4.0, 8.0), new Vector(-1.0, 0.5, 0.0))
     };
 }
 
 function exec() {
     var canv = document.createElement("canvas");
-    canv.width = 256;
-    canv.height = 256;
+    canv.width = 600;
+    canv.height = 600;
     document.body.appendChild(canv);
     var ctx = canv.getContext("2d");
     var rayTracer = new RayTracer();
