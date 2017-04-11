@@ -1,5 +1,5 @@
 var Vector = (function () {
-    //点/向量类
+    //点、向量类
     function Vector(x, y, z) {
         this.x = x;
         this.y = y;
@@ -15,7 +15,7 @@ var Vector = (function () {
     Vector.dot = function (v1, v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; };
     //求长度
     Vector.mag = function (v) { return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); };
-    //
+    //v向量方向上的单位向量
     Vector.norm = function (v) {
         var mag = Vector.mag(v);
         var div = (mag === 0) ? Infinity : 1.0 / mag;
@@ -67,6 +67,12 @@ var Camera = (function () {
     }
     return Camera;
 }());
+// class cube implements Thing{
+//     constructor(public center: Vector, Length: number, public surface: Surface){
+//     }
+//     normal: (pos: Vector): Vector {return }
+//     interface: (ray: Ray)
+// }
 var Sphere = (function () {
     //构造函数球心坐标，半径，表面
     function Sphere(center, radius, surface) {

@@ -1,5 +1,5 @@
 class Vector {
-    //点/向量类
+    //点、向量类
     constructor(public x: number,
                 public y: number,
                 public z: number) {
@@ -14,7 +14,7 @@ class Vector {
     static dot(v1: Vector, v2: Vector) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
     //求长度
     static mag(v: Vector) { return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
-    //
+    //v向量方向上的单位向量
     static norm(v: Vector) {
         var mag = Vector.mag(v);
         var div = (mag === 0) ? Infinity : 1.0 / mag;
@@ -109,6 +109,40 @@ interface Scene {
     camera: Camera;
 }
 
+class ring implements Thing{
+    public Inradius2: number;
+    public Outradius2: number;
+    public ringradius:number;
+    constructor(public center: Vector, ringnorm: Vector, Inradius: number, Outradius: number, public surface: Surface){
+        this.Inradius2 = Inradius * Inradius;
+        this.Outradius2 = Outradius * Outradius;
+        this.ringradius = (Inradius + Outradius) / 2.0;
+    }
+    normal(pos: Vector): Vector { return Vector.norm(Vector.minus(pos, this.center)); }
+    intersect(ray: Ray) {
+        //计算射线起点到球心的向量
+        var eo = Vector.minus(this.center, ray.start);
+        //求内积
+        var v = Vector.dot(eo, ray.dir);
+        var dist = 0;
+        //内积大于零
+        if (v >= 0) {
+            //于半径夹角为锐角取该射线
+            var disc = this.Inradius2 - (Vector.dot(eo, eo) - v * v);
+            if (disc >= 0) {
+                //光线起点到光线与球交点的距离
+                dist = v - Math.sqrt(disc);
+            }
+        }
+        //内积小于零，dist未改变过数型及值，抛弃该光线
+        if (dist === 0) {
+            return null;
+        } else {
+            //取该光线
+            return { thing: this, ray: ray, dist: dist };
+        }
+    }
+}
 class Sphere implements Thing {
     //球实现Thing接口
     public radius2: number;
@@ -119,18 +153,25 @@ class Sphere implements Thing {
     }
     normal(pos: Vector): Vector { return Vector.norm(Vector.minus(pos, this.center)); }
     intersect(ray: Ray) {
+        //计算射线起点到球心的向量
         var eo = Vector.minus(this.center, ray.start);
+        //求内积
         var v = Vector.dot(eo, ray.dir);
         var dist = 0;
+        //内积大于零
         if (v >= 0) {
+            //于半径夹角为锐角取该射线
             var disc = this.radius2 - (Vector.dot(eo, eo) - v * v);
             if (disc >= 0) {
+                //光线起点到光线与球交点的距离
                 dist = v - Math.sqrt(disc);
             }
         }
+        //内积小于零，dist未改变过数型及值，抛弃该光线
         if (dist === 0) {
             return null;
         } else {
+            //取该光线
             return { thing: this, ray: ray, dist: dist };
         }
     }
@@ -183,10 +224,14 @@ module Surfaces {
 
 class RayTracer {
     private maxDepth = 5;
-
+    
+    //取最近的intersect
     private intersections(ray: Ray, scene: Scene) {
+        //初始为正无穷
         var closest = +Infinity;
+        //初始未无定义
         var closestInter: Intersection = undefined;
+        //遍历替换为小
         for (var i in scene.things) {
             var inter = scene.things[i].intersect(ray);
             if (inter != null && inter.dist < closest) {
@@ -197,6 +242,7 @@ class RayTracer {
         return closestInter;
     }
 
+    //取最近的intersect的距离
     private testRay(ray: Ray, scene: Scene) {
         var isect = this.intersections(ray, scene);
         if (isect != null) {
@@ -206,6 +252,7 @@ class RayTracer {
         }
     }
 
+    //若Ray方向上没有物体，设置为背景色，有物体取颜色
     private traceRay(ray: Ray, scene: Scene, depth: number): Color {
         var isect = this.intersections(ray, scene);
         if (isect === undefined) {
@@ -216,9 +263,13 @@ class RayTracer {
     }
 
     private shade(isect: Intersection, scene: Scene, depth: number) {
+        //d为射线方向
         var d = isect.ray.dir;
+        //pos为Intersect的位置坐标
         var pos = Vector.plus(Vector.times(isect.dist, d), isect.ray.start);
+
         var normal = isect.thing.normal(pos);
+        //反射
         var reflectDir = Vector.minus(d, Vector.times(2, Vector.times(Vector.dot(normal, d), normal)));
         var naturalColor = Color.plus(Color.background,
                                       this.getNaturalColor(isect.thing, pos, normal, reflectDir, scene));
@@ -253,10 +304,12 @@ class RayTracer {
     }
 
     render(scene, ctx, screenWidth, screenHeight) {
+        //确定摄像机视角
         var getPoint = (x, y, camera) => {
             var recenterX = x =>(x - (screenWidth / 2.0)) / 2.0 / screenWidth;
             var recenterY = y => - (y - (screenHeight / 2.0)) / 2.0 / screenHeight;
             return Vector.norm(Vector.plus(camera.forward, Vector.plus(Vector.times(recenterX(x), camera.right), Vector.times(recenterY(y), camera.up))));
+            //            求单位向量    加                         加            倍乘                                   倍乘                 
         }
         for (var y = 0; y < screenHeight; y++) {
             for (var x = 0; x < screenWidth; x++) {
