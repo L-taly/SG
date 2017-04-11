@@ -109,40 +109,40 @@ interface Scene {
     camera: Camera;
 }
 
-class ring implements Thing{
-    public Inradius2: number;
-    public Outradius2: number;
-    public ringradius:number;
-    constructor(public center: Vector, ringnorm: Vector, Inradius: number, Outradius: number, public surface: Surface){
-        this.Inradius2 = Inradius * Inradius;
-        this.Outradius2 = Outradius * Outradius;
-        this.ringradius = (Inradius + Outradius) / 2.0;
-    }
-    normal(pos: Vector): Vector { return Vector.norm(Vector.minus(pos, this.center)); }
-    intersect(ray: Ray) {
-        //计算射线起点到球心的向量
-        var eo = Vector.minus(this.center, ray.start);
-        //求内积
-        var v = Vector.dot(eo, ray.dir);
-        var dist = 0;
-        //内积大于零
-        if (v >= 0) {
-            //于半径夹角为锐角取该射线
-            var disc = this.Inradius2 - (Vector.dot(eo, eo) - v * v);
-            if (disc >= 0) {
-                //光线起点到光线与球交点的距离
-                dist = v - Math.sqrt(disc);
-            }
-        }
-        //内积小于零，dist未改变过数型及值，抛弃该光线
-        if (dist === 0) {
-            return null;
-        } else {
-            //取该光线
-            return { thing: this, ray: ray, dist: dist };
-        }
-    }
-}
+// class ring implements Thing{
+//     public Inradius2: number;
+//     public Outradius2: number;
+//     public ringradius:number;
+//     constructor(public center: Vector, ringnorm: Vector, Inradius: number, Outradius: number, public surface: Surface){
+//         this.Inradius2 = Inradius * Inradius;
+//         this.Outradius2 = Outradius * Outradius;
+//         this.ringradius = (Inradius + Outradius) / 2.0;
+//     }
+//     normal(pos: Vector): Vector { return Vector.norm(Vector.minus(pos, this.center)); }
+//     intersect(ray: Ray) {
+//         //计算射线起点到球心的向量
+//         var eo = Vector.minus(this.center, ray.start);
+//         //求内积
+//         var v = Vector.dot(eo, ray.dir);
+//         var dist = 0;
+//         //内积大于零
+//         if (v >= 0) {
+//             //于半径夹角为锐角取该射线
+//             var disc = this.Inradius2 - (Vector.dot(eo, eo) - v * v);
+//             if (disc >= 0) {
+//                 //光线起点到光线与球交点的距离
+//                 dist = v - Math.sqrt(disc);
+//             }
+//         }
+//         //内积小于零，dist未改变过数型及值，抛弃该光线
+//         if (dist === 0) {
+//             return null;
+//         } else {
+//             //取该光线
+//             return { thing: this, ray: ray, dist: dist };
+//         }
+//     }
+// }
 class Sphere implements Thing {
     //球实现Thing接口
     public radius2: number;
